@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}セットアップ{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-lg-10 mx-auto">
+
+    <form method="post" class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h2 class="h4 m-0">席決めセットアップ</h2>
+          <span class="badge text-bg-secondary">候補者: {{ people_count }} 人</span>
+        </div>
+
+        <!-- 基本設定 -->
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body">
+            <h3 class="h6 text-muted mb-3">基本設定</h3>
+            <div class="row g-3">
+              <div class="col-12 col-sm-6">
+                <label class="form-label">テーブル数</label>
+                <input class="form-control" type="number" name="num_tables" id="num_tables"
+                       value="4" min="1" required>
+                <div class="form-text" id="autoSizeInfo"></div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <label class="form-label">1テーブルの座席数（任意・一括）</label>
+                <input class="form-control" type="number" name="size_per" id="size_per"
+                       placeholder="空なら自動均等割り" min="1">
+                <div class="form-text">個別の人数が空欄のとき、この値を使います。これも空なら自動計算。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 先生設定（任意） -->
+        <div class="card mb-3 shadow-sm">
+          <div class="card-body">
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input" type="checkbox" role="switch"
+                     id="has_teacher" name="has_teacher">
+              <label class="form-check-label" for="has_teacher">先生を含める</label>
+            </div>
+
+            <div id="teacher_fields" class="row g-3" style="display:none;">
+              <div class="col-12 col-md-6">
+                <label class="form-label">氏名</label>
+                <input class="form-control" type="text" name="teacher_name" placeholder="先生">
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">性別</label>
+                <select class="form-select" name="teacher_gender">
+                  <option value="">未指定</option>
+                  <option value="male">男性</option>
+                  <option value="female">女性</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- テーブル名 & 人数（任意） -->
+        <h3 class="h6 text-muted mb-3">テーブル名 & 人数（任意）</h3>
+        <div id="table_rows" class="vstack gap-2"></div>
+
+        <hr class="my-3">
+        <div class="d-flex gap-2 justify-content-end">
+          <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">戻る</a>
+          <button type="submit" class="btn btn-primary">出席チェックへ</button>
+        </div>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_style %}
+<style>
+  .card { border-radius: 0.8rem; }
+  .form-text { color:#6c757d; }
+</style>
+{% endblock %}
+
+<script>
+function updateTableRows() {
+  const n = parseInt(document.getElementById('num_tables').value || '1');
+  const wrap = document.getElementById('table_rows');
+  wrap.innerHTML = '';
+  for (let i = 1; i <= n; i++) {
+    const row = document.createElement('div');
+    row.className = 'row g-2';
+    row.innerHTML = `
+      <div class="col-sm-8">
+        <input class="form-control" name="table_name_${i}" placeholder="テーブル${i}">
+      </div>
+      <div class="col-sm-4">
+        <input class="form-control" type="number" min="1" name="table_size_${i}" placeholder="人数（任意）">
+      </div>`;
+    wrap.appendChild(row);
+  }
+  showAutoSizeInfo();
+}
+
+function showAutoSizeInfo(){
+  const n = parseInt(document.getElementById('num_tables').value || '1');
+  const total = Number('{{ people_count|default(0) }}');
+  const size  = Math.ceil((total || 0) / (n || 1));
+  const info  = document.getElementById('autoSizeInfo');
+  if (!info) return;
+  info.textContent = total ? `自動計算の目安: 候補者 ${total}人 ÷ ${n}卓 ≒ 1卓あたり ${size}人` : '';
+}
+
+function toggleTeacher(){
+  const on = document.getElementById('has_teacher').checked;
+  const box = document.getElementById('teacher_fields');
+  if (box) box.style.display = on ? '' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateTableRows();
+  document.getElementById('num_tables').addEventListener('change', updateTableRows);
+  document.getElementById('has_teacher').addEventListener('change', toggleTeacher);
+});
+</script>

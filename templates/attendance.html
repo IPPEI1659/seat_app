@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}出席チェック{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12 col-lg-10 mx-auto">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h2 class="h5 mb-3">出席チェック</h2>
+        <form method="post">
+          <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2">
+            {% for p in people %}
+            <div class="col">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="present" value="{{ p }}" id="p{{ loop.index }}" checked>
+                <label class="form-check-label" for="p{{ loop.index }}">{{ p }}</label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <hr class="my-3">
+          <div class="d-flex justify-content-end gap-2">
+            <a class="btn btn-outline-secondary" href="{{ url_for('setup') }}">戻る</a>
+            <button type="submit" class="btn btn-primary">席割りを更新</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if seating %}
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h3 class="h6 text-muted mb-3">割当結果</h3>
+        <div class="row g-3">
+          {% for t_idx, seats in seating.items() %}
+          <div class="col-12 col-md-6">
+            <div class="border rounded p-2">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>{{ seats[0].table_name if seats and seats[0].table_name else ('テーブル ' ~ t_idx) }}</strong>
+                <span class="badge text-bg-light">{{ seats|length }}人</span>
+              </div>
+              <ol class="mb-0">
+                {% for s in seats %}
+                <li>{{ s.name }} <small class="text-muted">#{{ s.seat }}</small></li>
+                {% endfor %}
+              </ol>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <hr class="my-3">
+        <div class="d-flex gap-2">
+          <a class="btn btn-outline-secondary" href="{{ url_for('result') }}">個別結果を見る</a>
+          <a class="btn btn-outline-secondary" href="{{ url_for('list_participants') }}">全体一覧</a>
+          <a class="btn btn-outline-primary" href="{{ url_for('download_csv') }}">CSVダウンロード</a>
+          <a class="btn btn-outline-primary" href="{{ url_for('download_xlsx') }}">Excelダウンロード</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
