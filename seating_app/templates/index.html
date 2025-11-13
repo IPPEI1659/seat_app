@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}席決めアプリ{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h1 class="h4 mb-3">席決めアプリ</h1>
+    <p class="mb-2">候補者（CSV）：<strong>{{ people_count }}</strong> 人</p>
+    <p class="text-muted">アプリと同じフォルダの <code>members.csv</code> を自動読み込みします。</p>
+    <div class="d-flex gap-2">
+      <a class="btn btn-primary" href="{{ url_for('setup') }}">セットアップへ</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('reset') }}">リセット</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

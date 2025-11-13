@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{{ participant }} の席{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h5 mb-3">{{ participant }} の席</h2>
+
+    {% if seat %}
+      <p class="mb-1">テーブル：<strong>{{ seat.table_name }}</strong>（#{{ seat.table }}）</p>
+      <p class="mb-3">席番号：<strong>{{ seat.seat }}</strong></p>
+      <a class="btn btn-outline-secondary" href="{{ url_for('qr', participant=participant) }}">このページのQRを表示</a>
+    {% else %}
+      <p class="text-muted">席情報が見つかりません。</p>
+    {% endif %}
+
+    <hr class="my-3">
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" href="{{ url_for('result') }}">参加者一覧へ</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('list_participants') }}">全体を見る</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
