@@ -380,7 +380,7 @@ def attendance():
     tables = finalize_table_sizes(len(present), tables, equalize=True)
     session["tables_def"] = tables
 
-    assigns = balanced_assign(present, tables, seed=42)
+    assigns = balanced_assign(present, tables, seed=random.randint(0, 999999))
     seating = build_seating(assigns)
 
     session["assignments"] = assigns
@@ -465,3 +465,4 @@ def reset():
 if __name__ == "__main__":
     print(">> アプリ起動: http://127.0.0.1:5000")
     app.run(debug=True)
+
